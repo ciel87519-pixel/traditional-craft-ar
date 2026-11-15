@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>うつわ日和｜伝統工芸のうつわ（AR版）</title>
+<style>
+  :root{--ink:#292823;--muted:#77756e;--line:#e8e5de;--paper:#fffefa;--accent:#7b5945;--accent-dark:#604331;--soft:#f5f1eb}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Yu Gothic",Meiryo,sans-serif;line-height:1.7}
+  a{color:inherit;text-decoration:none}
+  .topline{height:5px;background:var(--accent)}
+  header{border-bottom:1px solid var(--line);background:#fffefa}
+  .header-inner{max-width:1120px;margin:auto;padding:20px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+  .brand{font-family:Georgia,"Yu Mincho",serif;font-size:25px;letter-spacing:.12em;font-weight:600}
+  .brand small{display:block;font-family:inherit;font-size:10px;letter-spacing:.2em;color:var(--muted);font-weight:400;margin-top:-4px}
+  nav{display:flex;gap:26px;font-size:13px;color:#57544e}
+  .cart{font-size:13px;border:1px solid var(--line);padding:7px 13px;border-radius:3px;white-space:nowrap}
+  main{max-width:1120px;margin:0 auto;padding:34px 28px 80px}
+  .breadcrumbs{font-size:12px;color:var(--muted);margin-bottom:27px}
+  .eyebrow{font-size:11px;letter-spacing:.18em;color:var(--accent);margin:0 0 8px}
+  h1{font-family:Georgia,"Yu Mincho",serif;font-size:30px;font-weight:500;letter-spacing:.08em;margin:0 0 8px}
+  .intro{font-size:13px;color:var(--muted);margin:0 0 27px}
+  .product-switch{display:flex;gap:9px;margin-bottom:24px}
+  .switch-btn{border:1px solid #d9d3ca;background:white;color:#514b44;padding:9px 24px;min-width:112px;border-radius:2px;cursor:pointer;font:inherit;font-size:13px}
+  .switch-btn.active{background:var(--accent);border-color:var(--accent);color:white}
+  .product-layout{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(330px,.92fr);gap:54px;align-items:start}
+  .photo-frame img{width:100%;height:100%;object-fit:contain;display:none;background:#f2eee8}
+  .placeholder-icon:before{content:"";position:absolute;width:22px;height:22px;border:1px solid #bcb2a6;border-radius:50%;top:8px;left:10px}
+  .photo-placeholder span{font-size:11px;margin-top:5px;color:#9a9187}
+  .photo-thumb.active{border:2px solid var(--accent);padding:2px}
+  .photo-thumb:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .product-info{padding-top:4px}
+  .category{font-size:11px;color:var(--accent);letter-spacing:.13em;margin-bottom:9px}
+  h2{font-family:Georgia,"Yu Mincho",serif;font-size:27px;line-height:1.45;font-weight:500;margin:0 0 12px}
+  .catch{font-size:14px;color:#5f5a53;margin:0 0 18px}
+  .price{font-size:23px;font-weight:600;margin:0 0 3px;letter-spacing:.03em}
+  .tax{font-size:11px;color:var(--muted);margin-bottom:21px}
+  .description{font-size:13px;color:#5e5a54;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:17px 0;margin-bottom:20px}
+  .spec-title{font-size:13px;font-weight:600;margin:0 0 9px}
+  .specs{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:24px}
+  .specs th,.specs td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  .specs th{width:31%;font-weight:500;color:#716b63;background:#faf8f4}
+  .buy-row{display:flex;gap:10px}
+  .buy-btn{flex:1;background:var(--accent);border:1px solid var(--accent);color:#fff;padding:14px 18px;font-size:13px;letter-spacing:.08em;cursor:pointer;border-radius:2px}
+  .buy-btn:hover{background:var(--accent-dark)}
+  .favorite-btn{width:50px;background:white;border:1px solid #d9d3ca;color:var(--accent);font-size:20px;cursor:pointer;border-radius:2px}
+  .shipping{font-size:11px;color:var(--muted);margin-top:12px}
+  .features{margin-top:66px;padding-top:30px;border-top:1px solid var(--line)}
+  .features h3{font-family:Georgia,"Yu Mincho",serif;font-weight:500;text-align:center;font-size:21px;letter-spacing:.1em;margin:0 0 23px}
+  .feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .feature{background:var(--soft);padding:20px 18px;text-align:center}
+  .feature b{display:block;font-size:13px;font-weight:600;margin-bottom:7px}
+  .feature p{font-size:11px;color:var(--muted);margin:0}
+  footer{background:#f5f1eb;border-top:1px solid var(--line);padding:25px;text-align:center;color:var(--muted);font-size:11px}
+  .notice.show{opacity:1;transform:translate(-50%,0)}
+  @media(max-width:760px){.header-inner{padding:16px 18px}.header-inner nav{display:none}main{padding:25px 18px 55px}.product-layout{grid-template-columns:1fr;gap:28px}.product-info{padding-top:0}h1{font-size:25px}.feature-grid{grid-template-columns:1fr}.features{margin-top:45px}}
+</style>
+
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+<style>
+  .model-frame{position:relative;background:#f2eee8;aspect-ratio:1/1;min-height:360px;border:1px solid #eee9e1;overflow:hidden}
+  model-viewer{display:block;width:100%;height:100%;min-height:360px;background:#f2eee8;--poster-color:#f2eee8}
+  .ar-controls{display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap}
+  .ar-start{background:var(--accent);border:1px solid var(--accent);color:#fff;padding:11px 18px;font:inherit;font-size:13px;cursor:pointer;border-radius:2px}
+  .ar-start:hover{background:var(--accent-dark)}
+  .ar-status{font-size:11px;color:var(--muted);margin:8px 0 0}
+  @media(max-width:760px){.model-frame{min-height:300px}model-viewer{min-height:300px}}
+</style>
+
+</head>
+<body>
+<div class="topline"></div>
+<header>
+  <div class="header-inner">
+    <a class="brand" href="#">うつわ日和<small>UTSUWA BIYORI</small></a>
+    <nav><a href="#product">商品一覧</a><a href="#about">工芸品について</a><a href="#guide">ご利用ガイド</a></nav>
+    <div class="cart">カート <span id="cart-count">0</span></div>
+  </div>
+</header>
+<main id="product">
+  <div class="breadcrumbs">ホーム　/　伝統工芸品　/　うつわ</div>
+  <p class="eyebrow">CRAFTS FOR EVERYDAY LIFE</p>
+  <h1>暮らしを彩る、手仕事のうつわ。</h1>
+  <p class="intro">職人の手によって生み出された、日々の暮らしに寄り添う工芸品をご紹介します。</p>
+
+  <div class="product-switch" role="group" aria-label="商品を選択">
+    <button class="switch-btn active" id="plate-tab" onclick="showProduct('plate')">皿</button>
+    <button class="switch-btn" id="cup-tab" onclick="showProduct('cup')">コップ</button>
+  </div>
+
+  <section class="product-layout">
+    <div>
+      <div class="model-frame">
+        <model-viewer id="craft-model"
+          src="models/plate.glb"
+          alt="九谷焼の皿の3Dモデル"
+          camera-controls
+          touch-action="pan-y"
+          shadow-intensity="1"
+          exposure="1"
+          ar
+          ar-modes="quick-look scene-viewer webxr"
+          ar-scale="fixed"
+          camera-orbit="35deg 70deg auto"
+          environment-image="neutral"
+          loading="eager">
+        </model-viewer>
+      </div>
+      <div class="ar-controls">
+        <button class="ar-start" type="button" onclick="launchAR()">ARで空間に配置する</button>
+      </div>
+      <p class="ar-status" id="ar-status">モデルを読み込んでいます。iPhoneではSafariでHTTPSのページを開いてください。</p>
+    </div>
+
+    <div class="product-info">
+      <div class="category" id="category">伝統工芸品　/　皿</div>
+      <h2 id="product-name">九谷焼の皿</h2>
+      <p class="catch" id="catchcopy">食卓に彩りを添える、趣ある一枚。</p>
+      <p class="price" id="price">￥1000</p>
+      <div class="tax">税込・送料別</div>
+      <div class="description" id="description">伝統的な技法と美しい意匠が魅力の工芸品です。普段の食卓から特別な日の食事まで、幅広い場面でお使いいただけます。<br>※ 商品説明は後から自由に変更できます。</div>
+      <p class="spec-title">商品情報</p>
+      <table class="specs">
+        <tr><th>商品名</th><td id="spec-name">九谷焼の皿</td></tr>
+        <tr><th>サイズ</th><td id="spec-size">直径：約16.8cm<br>高さ：約2.8cm</td></tr>
+        <tr><th>素材</th><td id="spec-material">陶磁器</td></tr>
+        <tr><th>産地</th><td id="spec-origin">石川県（要確認・変更）</td></tr>
+        <tr><th>その他</th><td>手作りのため、色・形に個体差があります。</td></tr>
+      </table>
+      <div class="buy-row">
+        <button class="buy-btn" onclick="window.location.href='https://docs.google.com/forms/d/e/1FAIpQLSdEU5Zw20X0lM_rznHxgbQIz8d2E44OhrxGPaHMzCaqN1YkrQ/viewform?usp=publish-editor'">購入する</button>
+        <button class="favorite-btn" aria-label="お気に入り" onclick="this.textContent=this.textContent==='♡'?'♥':'♡'">♡</button>
+      </div>
+      <p class="shipping">配送・お支払い方法については、ご利用ガイドをご確認ください。</p>
+    </div>
+  </section>
+
+  <section class="features" id="about">
+    <h3>手仕事の魅力を、日々の暮らしに。</h3>
+    <div class="feature-grid">
+      <div class="feature"><b>受け継がれる技術</b><p>地域に根差した伝統と職人の技が生み出す工芸品です。</p></div>
+      <div class="feature"><b>一つひとつ異なる表情</b><p>手仕事ならではの色合いや風合いをお楽しみいただけます。</p></div>
+      <div class="feature"><b>暮らしに寄り添う品</b><p>日常の中で使うことで、工芸品の魅力を身近に感じられます。</p></div>
+    </div>
+  </section>
+</main>
+<footer id="guide">うつわ日和　｜　伝統工芸品オンラインショップ（研究用サンプルページ）</footer>
+
+
+<script>
+const products = {
+  plate: {
+    category: '伝統工芸品　/　皿',
+    name: '九谷焼の皿',
+    catchcopy: '食卓に彩りを添える、趣ある一枚。',
+    price: '￥1000',
+    description: '伝統的な技法と美しい意匠が魅力の工芸品です。普段の食卓から特別な日の食事まで、幅広い場面でお使いいただけます。<br>※ 商品説明は後から自由に変更できます。',
+    size: '直径：約16.8cm<br>高さ：約2.8cm',
+    material: '陶磁器',
+    origin: '石川県（要確認・変更）',
+    model: 'models/plate.glb'
+  },
+  cup: {
+    category: '伝統工芸品　/　コップ',
+    name: '九谷焼のコップ',
+    catchcopy: '手に取るたび、日常に小さな彩りを。',
+    price: '￥800',
+    description: '伝統的な技法と美しい意匠が魅力の工芸品です。飲み物を楽しむひとときを、より豊かな時間にしてくれます。<br>※ 商品説明は後から自由に変更できます。',
+    size: '口径：約10.2cm<br>高さ：約8.7cm',
+    material: '陶磁器',
+    origin: '石川県（要確認・変更）',
+    model: 'models/cup.glb'
+  }
+};
+
+function showProduct(key) {
+  const p = products[key];
+  const viewer = document.getElementById('craft-model');
+
+  document.getElementById('category').textContent = p.category;
+  document.getElementById('product-name').textContent = p.name;
+  document.getElementById('catchcopy').textContent = p.catchcopy;
+  document.getElementById('price').textContent = p.price;
+  document.getElementById('description').innerHTML = p.description;
+  document.getElementById('spec-name').textContent = p.name;
+  document.getElementById('spec-size').innerHTML = p.size;
+  document.getElementById('spec-material').textContent = p.material;
+  document.getElementById('spec-origin').textContent = p.origin;
+
+  viewer.setAttribute('src', p.model);
+  viewer.setAttribute('alt', p.name + 'の3Dモデル');
+
+  document.getElementById('plate-tab').classList.toggle('active', key === 'plate');
+  document.getElementById('cup-tab').classList.toggle('active', key === 'cup');
+
+  const status = document.getElementById('ar-status');
+  status.textContent = '3Dモデルを読み込んでいます。iPhoneではSafariでHTTPSのページを開いてください。';
+}
+
+function launchAR() {
+  const viewer = document.getElementById('craft-model');
+  const status = document.getElementById('ar-status');
+
+  if (!customElements.get('model-viewer')) {
+    status.textContent = '3D表示の読み込みに失敗しました。インターネット接続を確認して、Safariでページを再読み込みしてください。';
+    return;
+  }
+
+  if (!viewer.canActivateAR) {
+    status.textContent = 'この環境ではARを起動できません。iPhoneのSafariでHTTPSのページを開き、モデルの読み込み完了後にお試しください。';
+    return;
+  }
+
+  try {
+    viewer.activateAR();
+  } catch (error) {
+    status.textContent = 'ARを起動できませんでした。iPhoneのSafariでHTTPSのページを開いているか確認してください。';
+  }
+}
+
+const modelViewer = document.getElementById('craft-model');
+modelViewer.addEventListener('load', () => {
+  document.getElementById('ar-status').textContent =
+    '3Dモデルを表示しました。iPhoneでは「ARで空間に配置する」を押してください。';
+});
+modelViewer.addEventListener('error', () => {
+  document.getElementById('ar-status').textContent =
+    '3Dモデルを読み込めません。HTMLとmodelsフォルダを同じ場所に置いているか確認してください。';
+});
+
+showProduct('plate');
+</script>
+
+</body>
+</html>
